@@ -1,0 +1,31 @@
+#version 330
+
+in vec3 FragPos;
+in vec2 TexCoords;
+in vec3 normal;
+
+uniform sampler2D diffuseMap;
+uniform mat4 model;
+uniform vec3 lightPos;
+uniform vec3 viewPos;
+
+void main(){
+    // get diffuse color
+    vec3 color = texture(diffuseMap, TexCoords).rgb;
+    // ambient
+    vec3 ambient = 0.1 * color;
+    // diffuse
+    vec3 lightDir = normalize(lightPos - FragPos);
+    float diff = max(dot(lightDir, normal), 0.0);
+    vec3 diffuse = diff * color;
+    // specular
+    vec3 viewDir = normalize(viewPos - FragPos);
+    vec3 halfwayDir = normalize(lightDir + viewDir);  
+    float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+
+    vec3 specular = vec3(0.2) * spec;
+    gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
+}
+
+
+
